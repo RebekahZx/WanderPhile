@@ -24,9 +24,9 @@ WanderPhile is a full-stack web application that allows users to list, browse, a
 - 🌍 **Geolocation Services**: Mapbox API
 
 ## 🚀 Installation
-cd wanderphile
+```cd wanderphile
 npm install
-
+```
 
 ### Clone the Repository
 
@@ -40,10 +40,10 @@ Open http://localhost:3000 in your browser.
 
 
 ## .env
-CLOUD_NAME=your-cloud-name
-CLOUD_API_KEY=your-api-key
-CLOUD_API_SECRET=your-api-secret
-MAP_TOKEN=your-mapbox-token
+- CLOUD_NAME=your-cloud-name
+- CLOUD_API_KEY=your-api-key
+- CLOUD_API_SECRET=your-api-secret
+- MAP_TOKEN=your-mapbox-token
 
 ### 🎯 Usage
 -👤 Register/Login: Users can create an account and log in to access features.
