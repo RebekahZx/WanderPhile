@@ -31,7 +31,7 @@ npm install
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/RevekahZx/wanderphile.git 
+git clone https://github.com/RebekahZx/WanderPhile.git 
 ```
 
 Access the App
