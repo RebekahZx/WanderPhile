@@ -1,18 +1,20 @@
-# Use official Node.js image
-FROM node:18
+# Use official Node.js LTS version
+FROM node:18-alpine
 
-# Set working directory
-WORKDIR /major_project
+# Create app directory
+WORKDIR /WanderPhile
 
-# Copy package.json and install dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
-RUN npm install
 
-# Copy the rest of your app's source code
+# Install dependencies
+RUN npm install --production
+
+# Copy the rest of the application code
 COPY . .
 
-# Expose port  for the app
+# Expose the port your app runs on
 EXPOSE 8080
 
-# Run the application
-CMD ["npm", "start"]
+# Define the command to run your app
+CMD [ "npm", "start" ]
