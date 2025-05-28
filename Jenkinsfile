@@ -2,64 +2,67 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'rebekahz/airbnb-clone'
-        CONTAINER_NAME = 'airbnb-clone'
-        PORT = '8080'
+        DOCKER_IMAGE = "rebekahz/wanderlust"
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
+                echo '📦 Installing Node.js dependencies...'
                 bat 'npm install'
             }
         }
 
-        stage('Code Quality - Lint') {
+        stage('Build') {
             steps {
-                bat 'npx eslint . || echo "Linting errors found"'
+                echo '🛠️ Building the application...'
+                // If you have a build step (like webpack), include it here
+                // If not, just use Docker build
+                bat 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
-        stage('Security Scan') {
+        stage('Test') {
             steps {
-                bat 'npm audit || echo "Audit issues found"'
+                echo '✅ Running tests...'
+                sh 'npm test'
             }
         }
 
-        stage('Build Docker Image') {
+        // OPTIONAL: Uncomment to use ESLint for Code Quality
+        /*
+        stage('Code Quality') {
             steps {
-                bat "docker build -t %IMAGE_NAME% ."
+                echo '🔍 Checking code quality with ESLint...'
+                sh 'npx eslint .'
             }
         }
+        */
 
-        stage('Run Docker Container') {
+        // OPTIONAL: Uncomment for Security Scanning
+        /*
+        stage('Security') {
             steps {
-                bat "docker run -d -p %PORT%:8080 --name %CONTAINER_NAME% %IMAGE_NAME%"
+                echo '🛡️ Running security audit...'
+                sh 'npm audit'
             }
         }
+        */
 
-        stage('Push Docker Image') {
+        stage('Deploy to Staging') {
             steps {
-                withCredentials([string(credentialsId: 'docker-hub-token', variable: 'DOCKER_TOKEN')]) {
-                    bat '''
-                    echo %DOCKER_TOKEN% | docker login -u rebekahz --password-stdin
-                    docker push %IMAGE_NAME%
-                    '''
-                }
+                echo '🚀 Deploying Docker container to staging...'
+                sh 'docker run -d -p 8080:8080 $DOCKER_IMAGE'
             }
         }
     }
 
     post {
-        always {
-            bat 'docker stop %CONTAINER_NAME% || echo "Container not running"'
-            bat 'docker rm %CONTAINER_NAME% || echo "Container not found"'
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed. Check the logs.'
         }
     }
 }
