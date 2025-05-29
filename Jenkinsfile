@@ -37,28 +37,32 @@ pipeline {
             }
         }
 
-        stage('Code Quality') {
-            steps {
-                echo 'Running ESLint...'
-                bat 'echo "Linting warnings ignored"'
-            }
-        }
+//         stage('Code Quality - SonarQube') {
+//             steps {
+//                 withSonarQubeEnv('SonarQube') {
+//                     bat 'sonar-scanner'
+//                 }
+//             }
+// }
+
 
         stage('Security - npm Audit') {
     steps {
         script {
-            def auditResult = sh(script: 'npm audit --json', returnStdout: true)
+            def auditResult = sh(script: 'npm audit --json || true', returnStdout: true).trim()
             def parsed = readJSON text: auditResult
-            if (parsed.metadata.vulnerabilities.total > 0) {
-                echo "Security vulnerabilities found!"
-                echo auditResult
+            def vulnCount = parsed.metadata.vulnerabilities.total
+
+            if (vulnCount > 0) {
+                echo "⚠️ Security vulnerabilities found: $vulnCount"
                 currentBuild.result = 'UNSTABLE'
             } else {
-                echo "No security vulnerabilities found."
+                echo "✅ No vulnerabilities found."
             }
         }
     }
 }
+
 
 
         stage('Deploy to Test') {
