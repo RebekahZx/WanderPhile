@@ -44,12 +44,22 @@ pipeline {
             }
         }
 
-        stage('Security') {
-            steps {
-                echo 'Running security audit...'
-                bat 'npm audit --audit-level=high || echo "Audit completed, review output"'
+        stage('Security - npm Audit') {
+    steps {
+        script {
+            def auditResult = sh(script: 'npm audit --json', returnStdout: true)
+            def parsed = readJSON text: auditResult
+            if (parsed.metadata.vulnerabilities.total > 0) {
+                echo "Security vulnerabilities found!"
+                echo auditResult
+                currentBuild.result = 'UNSTABLE'
+            } else {
+                echo "No security vulnerabilities found."
             }
         }
+    }
+}
+
 
         stage('Deploy to Test') {
             steps {
