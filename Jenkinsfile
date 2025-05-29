@@ -4,6 +4,10 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'wanderlust'
         DOCKER_HUB_REPO = 'rebekahz/wanderlust'
+        CLOUD_NAME=credentials('CLOUD_NAME')
+        CLOUD_API_KEY=credentials('CLOUD_API_KEY')
+        CLOUD_API_SECRET=credentials('CLOUD_API_SECRET')
+        MAP_TOKEN=credentials('MAP_TOKEN')
     }
 
     stages {
