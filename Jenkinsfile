@@ -49,7 +49,7 @@ pipeline {
         stage('Security - npm Audit') {
     steps {
         script {
-            def auditResult = sh(script: 'npm audit --json || true', returnStdout: true).trim()
+            def auditResult = bat(script: 'npm audit --json || true', returnStdout: true).trim()
             def parsed = readJSON text: auditResult
             def vulnCount = parsed.metadata.vulnerabilities.total
 
