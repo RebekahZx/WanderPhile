@@ -37,13 +37,13 @@ pipeline {
             }
         }
 
-        // stage('Code Quality - SonarQube') {
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             bat 'sonar-scanner'
-        //         }
-        //     }
-        // }
+        stage('Code Quality - SonarQube') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat 'sonar-scanner'
+                }
+            }
+        }
 
         stage('Security') {
             steps {
