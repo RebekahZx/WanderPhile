@@ -7,7 +7,7 @@ async function main() {
   try {
     await mongoose.connect(MONGO_URL);
     console.log("Database connection successful");
-    app.listen(8080, () => {
+    app.listen(8082, () => {
       console.log("Server is running on port 8080");
     });
   } catch (err) {

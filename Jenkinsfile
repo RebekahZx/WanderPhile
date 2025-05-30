@@ -30,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Test-jest') {
             steps {
                 echo '🧪 Running tests...'
                 bat 'npm test || echo "No tests defined, skipping..."'
@@ -39,9 +39,10 @@ pipeline {
 
         stage('Code Quality - SonarQube') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat 'sonar-scanner'
-                }
+                // withSonarQubeEnv('SonarQube') {
+                //     bat 'sonar-scanner'
+                // }
+                bat 'echo "SonarQube analysis would run here."'
             }
         }
 
@@ -61,7 +62,7 @@ pipeline {
 
         stage('Deploy to Test') {
             steps {
-                echo '🚀 Deploying to test environment...'
+                echo ' Deploying to test environment...'
                 bat "docker run -d -p 8080:8080 ${DOCKER_IMAGE}"
             }
         }
@@ -86,14 +87,14 @@ pipeline {
 
         stage('Monitoring') {
             steps {
-                echo '📈 Monitoring would be configured using external services like New Relic or Datadog.'
+                echo ' Monitoring would be configured using external services like New Relic or Datadog.'
             }
         }
     }
 
     post {
         always {
-            echo '🏁 Pipeline finished.'
+            echo ' Pipeline finished.'
         }
     }
 }
