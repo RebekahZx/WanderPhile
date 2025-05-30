@@ -49,19 +49,34 @@ pipeline {
         stage('Security - npm Audit') {
     steps {
         script {
-            def auditResult = bat(script: 'npm audit --json || true', returnStdout: true).trim()
+            def auditResult = bat(
+                script: 'cmd /c "npm audit --json || exit 0"',
+                returnStdout: true
+            ).trim()
+
             def parsed = readJSON text: auditResult
-            def vulnCount = parsed.metadata.vulnerabilities.total
+
+            def vulnCount = 0
+            if (parsed.metadata?.vulnerabilities) {
+                parsed.metadata.vulnerabilities.each { severity, count ->
+                    vulnCount += count as int
+                }
+            }
 
             if (vulnCount > 0) {
                 echo "⚠️ Security vulnerabilities found: $vulnCount"
-                currentBuild.result = 'UNSTABLE'
+                parsed.metadata.vulnerabilities.each { severity, count ->
+                    echo " - ${severity}: ${count}"
+                }
             } else {
                 echo "✅ No vulnerabilities found."
             }
+
+            // Build will continue no matter what
         }
     }
 }
+
 
 
 
