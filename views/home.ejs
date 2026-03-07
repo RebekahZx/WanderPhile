@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AgriYield • Agricultural Intelligence Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+/* ================= BASE ================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+  color: #0f172a;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ================= ANIMATED BACKGROUND ================= */
+
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: float 18s ease-in-out infinite;
+}
+
+.orb.primary {
+  width: 700px;
+  height: 700px;
+  top: -20%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(21,128,61,0.25), transparent 70%);
+}
+
+.orb.accent {
+  width: 900px;
+  height: 900px;
+  bottom: -30%;
+  left: -20%;
+  background: radial-gradient(circle, rgba(15,118,110,0.2), transparent 70%);
+  animation-duration: 22s;
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 30s linear infinite;
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(21,128,61,0.4), transparent);
+  animation: scan 8s linear infinite;
+}
+
+/* ================= HERO ================= */
+
+.hero {
+  position: relative;
+  z-index: 2;
+  padding: 5rem 8%;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.badge {
+  background: rgba(34,197,94,0.12);
+  color: #15803d;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+h1 {
+  font-size: 3.4rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+}
+
+h1 span { color: #15803d; }
+
+.subtitle {
+  font-size: 1.05rem;
+  color: #475569;
+}
+
+.subtitle.small {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 1rem 0 2rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 3.5rem;
+}
+
+.btn {
+  padding: 0.85rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-primary {
+  background: #15803d;
+  color: #ecfdf5;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(21,128,61,0.25);
+}
+
+.btn-outline {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+/* ================= STATS ================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(15,23,42,0.08);
+  padding: 1.6rem;
+  border-radius: 16px;
+  min-height: 110px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.stat:hover {
+  transform: translateY(-6px);
+  border-color: rgba(21,128,61,0.35);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.12),
+    0 0 30px rgba(21,128,61,0.25);
+}
+
+.stat h2 {
+  font-size: 2rem;
+  color: #15803d;
+  transition: transform 0.25s ease;
+}
+
+.stat:hover h2 {
+  transform: scale(1.05);
+}
+
+.stat p {
+  color: #475569;
+  margin-top: 0.4rem;
+}
+
+/* ================= INTELLIGENCE PANEL ================= */
+
+.visual {
+  position: relative;
+  height: 520px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1px solid rgba(21,128,61,0.25);
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15);
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.visual-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.intel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #0f766e;
+  margin-bottom: 1rem;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0f766e;
+  animation: pulse 2s infinite;
+}
+
+.visual h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #065f46;
+  margin-bottom: 1.4rem;
+}
+
+/* DATA CARDS */
+
+.data-points {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  flex: 1;
+}
+
+.data-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.data-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(21,128,61,0.25);
+}
+
+.data-card .crop {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.data-card .region {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.data-card .yield {
+  margin-top: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #15803d;
+}
+
+/* FOOTER METRICS */
+
+.intel-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(15,23,42,0.1);
+  padding-top: 1rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.processing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #15803d;
+  animation: pulse 1.5s infinite;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes float {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(40px,30px) scale(1.15); }
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to { background-position: 120px 120px; }
+}
+
+@keyframes scan {
+  from { top: -10%; }
+  to { top: 110%; }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(21,128,61,0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(21,128,61,0); }
+  100% { box-shadow: 0 0 0 0 rgba(21,128,61,0); }
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .data-points { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<div class="animated-bg">
+  <div class="orb primary"></div>
+  <div class="orb accent"></div>
+  <div class="grid-overlay"></div>
+  <div class="scan-line"></div>
+</div>
+
+<section class="hero">
+  <!-- LEFT -->
+  <div>
+    <div class="badge">🌾 India • 2026 Crop Intelligence</div>
+    <h1>Transparent <span>Agricultural Yield</span> Intelligence</h1>
+    <p class="subtitle">A unified platform for verified crop yield data, spatial analytics, and decision-grade insights.</p>
+    <p class="subtitle small">Government-sourced datasets • Geo-mapped • Research-ready</p>
+
+    <div class="actions">
+      <a href="/listings"><button class="btn btn-primary">View Crop Data</button></a>
+      <a href="/signup"><button class="btn btn-outline">For Farmers & Researchers</button></a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <h2 class="counter" data-target="10">0</h2>
+        <p>Districts covered</p>
+      </div>
+      <div class="stat">
+        <h2 class="counter" data-target="2026">0</h2>
+        <p>Verified dataset</p>
+      </div>
+      <div class="stat">
+        <h2 class="counter" data-target="120">0</h2>
+        <p>Geo-mapped records</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="visual">
+    <div class="visual-content">
+      <div class="intel-header">
+        <div class="live-dot"></div>
+        LIVE INTELLIGENCE FEED
+      </div>
+
+      <h3>Yield Intelligence</h3>
+
+      <div class="data-points">
+        <div class="data-card">
+          <div class="crop">🌾 Rice</div>
+          <div class="region">Punjab</div>
+          <div class="yield">2,517 kg/ha</div>
+        </div>
+        <div class="data-card">
+          <div class="crop">🌽 Maize</div>
+          <div class="region">Karnataka</div>
+          <div class="yield">2,159 kg/ha</div>
+        </div>
+        <div class="data-card">
+          <div class="crop">🌿 Soybean</div>
+          <div class="region">Madhya Pradesh</div>
+          <div class="yield">1,786 kg/ha</div>
+        </div>
+        <div class="data-card">
+          <div class="crop">🧺 Wheat</div>
+          <div class="region">Uttar Pradesh</div>
+          <div class="yield">2,565 kg/ha</div>
+        </div>
+      </div>
+
+      <div class="intel-footer">
+        <div><strong>98.7%</strong><br/>Accuracy</div>
+        <div><strong>2.3s</strong><br/>Latency</div>
+        <div class="processing">
+          <div class="processing-dot"></div>
+          PROCESSING
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBER ANIMATION -->
+<script>
+document.querySelectorAll(".counter").forEach(counter => {
+  const target = +counter.dataset.target;
+  const duration = 1200;
+  const start = performance.now();
+
+  function update(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    counter.textContent = Math.floor(eased * target) + (progress === 1 ? "+" : "");
+    if (progress < 1) requestAnimationFrame(update);
+  }
+
+  requestAnimationFrame(update);
+});
+</script>
+
+</body>
+</html>
