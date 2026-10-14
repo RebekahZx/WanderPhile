@@ -1,5 +1,5 @@
 # Use official Node.js LTS version
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Create app directory
 WORKDIR /WanderPhile
@@ -8,7 +8,7 @@ WORKDIR /WanderPhile
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm ci --omit=dev
 
 # Copy the rest of the application code
 COPY . .

@@ -1,5 +1,5 @@
 # Node modules
-# node_modules/
+node_modules/
 
 # Logs
 logs/
@@ -50,6 +50,7 @@ tmp/
 # Misc
 npm-debug.log
 yarn-error.log
-package-lock.json
 .pnpm-debug.log
 *.tgz
+audit-report.json
+audit.json
